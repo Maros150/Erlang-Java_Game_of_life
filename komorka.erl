@@ -7,7 +7,7 @@ start(X,Y) ->
 	spawn_link(?MODULE, init, [X,Y,[],niezyje,0]).
 
 init(X,Y,Sasiedzi,Stan,LicznikZyjacych) -> 
-	try run(0,X,Y,Sasiedzi,Stan,LicznikZyjacych) 
+	try run(X,Y,Sasiedzi,Stan,LicznikZyjacych) 
 	catch _ -> io:fwrite("Komorka X , Y umarla")
 	end.
 

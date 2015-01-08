@@ -1,18 +1,17 @@
 -module(serwer).
 -compile(export_all).
 -rr(komorka).
--rr(port).
 
-init(Szer,Wys) -> Sock = port:open(),
-	init(Szer,Wys,stworz_kom(1,1,Szer,Wys,[]),Sock ).
 
-init(Szer,Wys,Lista,Port) ->
-	port:send(Port,56),
-	init_sasiedzi(Lista,Lista,Szer,Wys,Port),
+init(Szer,Wys) -> 
+	init(Szer,Wys,stworz_kom(1,1,Szer,Wys,[]) ).
+
+init(Szer,Wys,Lista) ->
+	init_sasiedzi(Lista,Lista,Szer,Wys),
 	init_poczatkowe_B(Lista),
 	serwerRun(Lista).
 
-
+%co 9 sec wymiana danymi pom komorkami
 serwerRun(Lista) -> 
 	receive
 		after 9000 -> ping(Lista)
@@ -20,10 +19,10 @@ serwerRun(Lista) ->
 	serwerRun(Lista).
 
 %wyslanie kazdej komorce jej sasiadow(bez brzegowych)
-init_sasiedzi([],_,_,_,_) -> ok;
-init_sasiedzi([{X,Y,PID}|T],Lista,Szer,Wys,Port) ->
-	PID ! {init,sasiedzi({X,Y,PID},Lista,Szer,Wys),Port},
-	init_sasiedzi(T,Lista,Szer,Wys,Port).
+init_sasiedzi([],_,_,_) -> ok;
+init_sasiedzi([{X,Y,PID}|T],Lista,Szer,Wys) ->
+	PID ! {init,sasiedzi({X,Y,PID},Lista,Szer,Wys)},
+	init_sasiedzi(T,Lista,Szer,Wys).
 
 sasiedzi({X,Y,_},Lista,Szer,Wys) when X > 1, Y > 1, X < Szer, Y < Wys -> 
 	[znajdz(X-1,Y-1,Lista), znajdz(X-1,Y,Lista), znajdz(X-1,Y+1,Lista),

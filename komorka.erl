@@ -1,6 +1,6 @@
 -module(komorka).
 -compile(export_all).
--rr(port).
+
 
 
 start(X,Y) ->
@@ -12,24 +12,24 @@ init(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 	end.
 
 
-run(Port,X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
+run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 	receive
 		{change,zyje} ->	
-			run(Port,X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych + 1)), (LicznikZyjacych + 1));
+			run(X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych + 1)), (LicznikZyjacych + 1));
 
 		{change,niezyje} ->
-			run(Port,X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
+			run(X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
 
 		{ping} -> 
-			rysuj(Port, Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
+			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
-			run(Port,X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
+			run(X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
 
-		{init,InitSasiedzi,initPort} ->
-			run(initPort,X,Y,InitSasiedzi,Stan,LicznikZyjacych);
+		{init,InitSasiedzi} ->
+			run(X,Y,InitSasiedzi,Stan,LicznikZyjacych);
 
 		{set,SetStan} ->
-			run(Port,X,Y,Sasiedzi,SetStan,LicznikZyjacych)	 
+			run(X,Y,Sasiedzi,SetStan,LicznikZyjacych)	 
 	end.
 	
 
@@ -43,9 +43,9 @@ wyslij_sasiadom(Stan,[PID|T]) ->
 	PID ! {change,Stan},
 	wyslij_sasiadom(Stan,T).
 
-rysuj(_Port,Stan,NewStan,_,_) when Stan == NewStan -> ok;
-rysuj(Port,_,_,X,Y) ->
-	port:send(Port,{X,Y}),
+rysuj(Stan,NewStan,_,_) when Stan == NewStan -> ok;
+rysuj(_,_,X,Y) ->
+	{echo,java@(tu nazwa kompa)} ! {X,Y},
 	ok.
 
 	

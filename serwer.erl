@@ -1,6 +1,6 @@
 -module(serwer).
 -compile(export_all).
--rr(komorka).
+
 
 
 init(Szer,Wys) -> 

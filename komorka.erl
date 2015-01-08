@@ -1,6 +1,6 @@
 -module(komorka).
 -compile(export_all).
--rr(port)
+-rr(port).
 
 
 start(X,Y) ->
@@ -20,15 +20,13 @@ run(Port,X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 		{change,niezyje} ->
 			run(Port,X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
 
-		{ping} ->
+		{ping} -> 
+			rysuj(Port, Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
 			run(Port,X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
-			
-		{port,initPort} ->
-			run(initPort,X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
 
-		{init,InitSasiedzi} ->
-			run(Port,X,Y,InitSasiedzi,Stan,LicznikZyjacych);
+		{init,InitSasiedzi,initPort} ->
+			run(initPort,X,Y,InitSasiedzi,Stan,LicznikZyjacych);
 
 		{set,SetStan} ->
 			run(Port,X,Y,Sasiedzi,SetStan,LicznikZyjacych)	 
@@ -45,3 +43,10 @@ wyslij_sasiadom(Stan,[PID|T]) ->
 	PID ! {change,Stan},
 	wyslij_sasiadom(Stan,T).
 
+rysuj(_Port,Stan,NewStan,_,_) when Stan == NewStan -> ok;
+rysuj(Port,_,_,X,Y) ->
+	port:send(Port,{X,Y}),
+	ok.
+
+	
+		

@@ -2,7 +2,6 @@
 -compile(export_all).
 
 
-
 start(X,Y) ->
 	spawn_link(?MODULE, init, [X,Y,[],niezyje,0]).
 
@@ -21,7 +20,7 @@ run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 			run(X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
 
 		{ping} -> 
-			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
+			%rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
 			run(X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
 
@@ -45,8 +44,7 @@ wyslij_sasiadom(Stan,[PID|T]) ->
 
 rysuj(Stan,NewStan,_,_) when Stan == NewStan -> ok;
 rysuj(_,_,X,Y) ->
-	{echo,java@(tu nazwa kompa)} ! {X,Y},
+	{echo,java@} ! {X,Y},
 	ok.
-
 	
 		

@@ -1,20 +1,20 @@
 -module(serwer).
 -compile(export_all).
 
-
+start() -> spawn_link(?MODULE,init,[20,20]).
 
 init(Szer,Wys) -> 
-	init(Szer,Wys,stworz_kom(1,1,Szer,Wys,[]) ).
+	init(Szer,Wys,stworz_kom(1,1,Szer,Wys,[])).
 
 init(Szer,Wys,Lista) ->
 	init_sasiedzi(Lista,Lista,Szer,Wys),
 	init_poczatkowe_B(Lista),
 	serwerRun(Lista).
 
-%co 9 sec wymiana danymi pom komorkami
+
 serwerRun(Lista) -> 
 	receive
-		after 9000 -> ping(Lista)
+		after 2000 -> ping(Lista)
 	end,
 	serwerRun(Lista).
 
@@ -65,9 +65,8 @@ init_poczatkowe_B(Lista) ->
 	znajdz(5,5,Lista) ! {set,zywa},
 	znajdz(6,6,Lista) ! {set,zywa},
 	znajdz(5,6,Lista) ! {set,zywa},
-	znajdz(6,5,Lista) ! {set,zywa}
+	znajdz(6,5,Lista) ! {set,zywa},
 	
-	%znajdz(3,3,Lista) ! {set,zywa},
-	%znajdz(3,4,Lista) ! {set,zywa}
+	znajdz(3,3,Lista) ! {set,zywa},
+	znajdz(3,4,Lista) ! {set,zywa}
 	.
-

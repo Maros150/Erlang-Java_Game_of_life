@@ -1,7 +1,7 @@
 -module(serwer).
 -compile(export_all).
 
-start() -> spawn_link(?MODULE,init,[20,20]).
+start() -> spawn_link(?MODULE,init,[10,10]).
 
 init(Szer,Wys) -> 
 	init(Szer,Wys,stworz_kom(1,1,Szer,Wys,[])).
@@ -62,11 +62,11 @@ decyzja(Rand,PID) when Rand == 1 ->
 decyzja(_,_) -> ok.
 
 init_poczatkowe_B(Lista) ->
-	znajdz(5,5,Lista) ! {set,zywa},
-	znajdz(6,6,Lista) ! {set,zywa},
-	znajdz(5,6,Lista) ! {set,zywa},
-	znajdz(6,5,Lista) ! {set,zywa},
+	znajdz(5,5,Lista) ! {set,zyje},
+	znajdz(6,6,Lista) ! {set,zyje},
+	znajdz(5,6,Lista) ! {set,zyje},
+	znajdz(6,5,Lista) ! {set,zyje},
 	
-	znajdz(3,3,Lista) ! {set,zywa},
-	znajdz(3,4,Lista) ! {set,zywa}
+	znajdz(3,3,Lista) ! {set,zyje},
+	znajdz(3,4,Lista) ! {set,zyje}
 	.

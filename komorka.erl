@@ -14,21 +14,23 @@ init(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 	receive
 		{change,zyje} ->	
-			run(X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych + 1)), (LicznikZyjacych + 1));
+			run(X,Y,Sasiedzi,Stan,(LicznikZyjacych + 1));
 
 		{change,niezyje} ->
-			run(X,Y,Sasiedzi,sprawdz(Stan,(LicznikZyjacych)), (LicznikZyjacych));
+			run(X,Y,Sasiedzi,Stan,LicznikZyjacych);
 
 		{ping} -> 
-			%rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
-			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
+			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych), Sasiedzi),
+			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			run(X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
 
 		{init,InitSasiedzi} ->
 			run(X,Y,InitSasiedzi,Stan,LicznikZyjacych);
 
 		{set,SetStan} ->
-			run(X,Y,Sasiedzi,SetStan,LicznikZyjacych)	 
+			wyslij_sasiadom(zyje, Sasiedzi),
+			rysuj(niezyje,zyje, X, Y),
+			run(X,Y,Sasiedzi,zyje,LicznikZyjacych)	 
 	end.
 	
 

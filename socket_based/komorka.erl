@@ -29,6 +29,7 @@ run(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
 
 		{set,SetStan} ->
 			wyslij_sasiadom(zyje,Sasiedzi),
+			rysuj(PID,niezyje,zyje, X, Y),
 			run(X,Y,PID,Sasiedzi,zyje,LicznikZyjacych)
 		
 	end.

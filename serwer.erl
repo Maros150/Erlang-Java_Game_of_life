@@ -81,23 +81,16 @@ ustaw_stan(PID,Stan) -> PID ! {set, Stan}.
 %<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 %wariant A ->(dla kazdej komorki)wybieramy 
 %jaka jest szansa na ozywienie komorki {1,2,3,...,100}
-%losujemy liczbe z przedzialu od 1 do 100
+%losujemy liczbe z przedzialu od 1 do wczeœnij wybranej liczby i 
 %podejmujemy decyzje czy ozywic komorke
 init_poczatkowe_A(_,[]) -> ok;
-init_poczatkowe_A(Procent,[{_,_,PID}|T]) ->
-	decyzja(Procent,random:uniform(100),PID),
-	init_poczatkowe_A(Procent,T).
+init_poczatkowe_A(Rand,[{_,_,PID}|T]) ->
+	decyzja(random:uniform(Rand),PID),
+	init_poczatkowe_A(Rand,T).
 
-%---------------------------------------------------
-%jesli wylosowana liczba jest mniejsza badz rowna 
-%wybranej przez nas wczesniej szansy to ozywiamy
-%komorke 
-decyzja(Procent,Rand,PID) when Procent < 1 ->
-	decyzja(1,Rand,PID);
-decyzja(Procent,Rand,PID) when Procent > 100 ->
-	decyzja(100,Rand,PID);
-decyzja(Procent,Rand,PID) when Rand =< Procent ->
-	ustaw_stan(PID,zyje).
+decyzja(Rand,PID) when Rand == 1 ->
+	ustaw_stan(PID,zyje);
+decyzja(_,_) -> ok.
 
 %<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 %wariant B ->ozywiamy kilka wczesniej wybranych komorek 

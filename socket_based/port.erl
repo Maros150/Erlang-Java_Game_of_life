@@ -15,6 +15,12 @@ open() ->
 send(Sock,Data) ->
 	gen_tcp:send(Sock,<<Data>>).
 
+get(Sock) ->
+	gen_tcp:recv(Sock,0).
+
+close(Sock) ->
+	gen_tcp:close(Sock).
+
 get_msg(Sock) ->
 	case gen_tcp:recv(Sock, 0) of
 		{ok, Data} ->

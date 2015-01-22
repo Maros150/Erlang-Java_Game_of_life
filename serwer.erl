@@ -18,14 +18,14 @@ init(Szer,Wys) ->
 %			Pid komorki
 init(Szer,Wys,Lista) ->
 	init_sasiedzi(Lista,Lista,Szer,Wys),
-	init_poczatkowe_B(Lista),
+	init_poczatkowe_C(Lista),
 	serwerRun(Lista).
 
 %-------------------------
 %synchronizacja pracy komorek
 serwerRun(Lista) -> 
 	receive
-		after 2000 -> ping(Lista)
+		after 400 -> ping(Lista)
 	end,
 	serwerRun(Lista).
 
@@ -40,10 +40,34 @@ init_sasiedzi([{X,Y,PID}|T],Lista,Szer,Wys) ->
 %zwraca liste Pid sasiadow kazdej komorki
 %nie obsluguje komorek na krawendziach 
 sasiedzi({X,Y,_},Lista,Szer,Wys) when X > 1, Y > 1, X < Szer, Y < Wys -> 
-	[znajdz(X-1,Y-1,Lista), znajdz(X-1,Y,Lista), znajdz(X-1,Y+1,Lista),
-	znajdz(X,Y-1,Lista), znajdz(X,Y+1,Lista),
-	znajdz(X+1,Y-1,Lista), znajdz(X+1,Y,Lista),znajdz(X+1,Y+1,Lista)];
+	[znajdz(X - 1,Y-1,Lista), znajdz(X-1,Y,Lista), znajdz(X - 1,Y + 1,Lista),
+	znajdz(X,Y - 1,Lista), znajdz(X,Y+1,Lista),
+	znajdz(X + 1,Y - 1,Lista), znajdz(X+1,Y,Lista),znajdz(X + 1,Y + 1,Lista)];
+
+sasiedzi({X,Y,_},Lista,Szer,_) when X > 1, Y == 1, X < Szer  -> 
+	[znajdz(X - 1,Y,Lista), znajdz(X + 1,Y,Lista), znajdz(X - 1,Y + 1,Lista),
+	znajdz(X,Y + 1,Lista), znajdz(X + 1,Y + 1,Lista)];
+sasiedzi({X,Y,_},Lista,_,Wys) when X == 1, Y > 1, Y < Wys  -> 
+	[znajdz(X + 1 ,Y,Lista), znajdz(X ,Y + 1,Lista), znajdz(X,Y - 1,Lista),
+	znajdz(X + 1,Y - 1,Lista), znajdz(X + 1,Y + 1,Lista)];
+sasiedzi({X,Y,_},Lista,Szer,Wys) when X == Szer, Y > 1, Y < Wys -> 
+	[znajdz(X - 1 ,Y,Lista), znajdz(X - 1 ,Y + 1,Lista), znajdz(X - 1,Y - 1,Lista),
+	znajdz(X ,Y - 1,Lista), znajdz(X ,Y + 1,Lista)];
+sasiedzi({X,Y,_},Lista,Szer,Wys) when X > 1 , Y == Wys, X < Szer  -> 
+	[znajdz(X - 1 ,Y,Lista), znajdz(X - 1,Y - 1,Lista), znajdz(X,Y - 1,Lista),
+	znajdz(X  + 1,Y - 1,Lista), znajdz(X + 1 ,Y ,Lista)];
+
+sasiedzi({X,Y,_},Lista,_,_) when X == 1, Y == 1 -> 
+	[znajdz(X + 1 ,Y,Lista), znajdz(X ,Y + 1,Lista), znajdz(X + 1,Y + 1,Lista)];
+sasiedzi({X,Y,_},Lista,_,Wys) when X == 1, Y == Wys -> 
+	[znajdz(X + 1 ,Y,Lista), znajdz(X ,Y - 1,Lista), znajdz(X + 1,Y - 1,Lista)];
+sasiedzi({X,Y,_},Lista,Szer,Wys) when X == Szer, Y == Wys -> 
+	[znajdz(X - 1 ,Y,Lista), znajdz(X ,Y - 1,Lista), znajdz(X - 1,Y - 1,Lista)];
+sasiedzi({X,Y,_},Lista,Szer,_) when X == Szer, Y == 1 -> 
+	[znajdz(X - 1 ,Y,Lista), znajdz(X ,Y + 1,Lista), znajdz(X - 1,Y + 1,Lista)];
+
 sasiedzi(_,_,_,_) -> [].	
+	
 
 %---------------------------------------------------	
 %znajdz Pid dla podanego X i Y w liscie krotek{X,Y,PID}
@@ -103,5 +127,9 @@ init_poczatkowe_B(Lista) ->
 	znajdz(3,3,Lista) ! {set,zyje},
 	znajdz(3,4,Lista) ! {set,zyje}
 	.
-
+%<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+init_poczatkowe_C(Lista) ->
+	znajdz(5,5,Lista) ! {set,zyje},
+	znajdz(5,6,Lista) ! {set,zyje},
+	znajdz(5,7,Lista) ! {set,zyje}
 

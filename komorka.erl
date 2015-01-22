@@ -14,10 +14,11 @@ start(X,Y) ->
 %wylapywanie wyjatkow i przedwczesnego zakonczenia
 %dzialania komorki
 init(X,Y) -> 
-	try run(X,Y,[],niezyje,0) 
-	catch _ -> io:fwrite("Komorka blad")
-	end,
-	exit(kill).
+	receive
+		{init,InitSasiedzi,InitPID} ->
+			run(X,Y,InitPID,InitSasiedzi,Stan, LicznikZyjacych)
+	end.
+
 
 
 
@@ -42,26 +43,38 @@ init(X,Y) ->
 %{change,zyje},{change,niezyje} - odebranie wiadomosci			 
 %		z jego aktualnym stanem od sasiada,
 %		jesli zyje zwiekszamy licznik zyjacych sssiadow
-run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
+run(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
 	receive
-		{change,zyje} ->	
-			run(X,Y,Sasiedzi,Stan,(LicznikZyjacych + 1));
-
-		{change,niezyje} ->
-			run(X,Y,Sasiedzi,Stan,LicznikZyjacych);
-
 		{ping} -> 
-			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych), Sasiedzi),
-			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
-			run(X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0);
+			rysuj(PID,Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
+			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
+			oczekiwanie(X,Y,PID,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0,1);
+		{set,SetStan} ->
+			run(X,Y,PID,Sasiedzi,niezyje,3);
+		{stop} -> ok
+		
+	end.
 
-		{init,InitSasiedzi} ->
-			run(X,Y,InitSasiedzi,Stan,LicznikZyjacych);
 
-		{set,zyje} ->
-			wyslij_sasiadom(zyje, Sasiedzi),
-			rysuj(niezyje,zyje, X, Y),
-			run(X,Y,Sasiedzi,zyje,LicznikZyjacych)	 
+
+oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
+	io:format("unexpected message ~p {~p}[~p;~p]~n", [Licznik,length(Sasiedzi),X,Y ]),
+	receive 
+		{change,zyje} -> 
+		case length(Sasiedzi)  of 
+			Licznik  ->
+				run(X,Y,PID,Sasiedzi,Stan, (LicznikZyjacych + 1));
+			_ ->	
+				oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych + 1,Licznik + 1)
+		end;
+		{change,niezyje} -> 
+		case length(Sasiedzi)  of 
+			Licznik    ->
+				run(X,Y,PID,Sasiedzi,Stan, LicznikZyjacych);
+			_ ->
+				oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych,Licznik + 1)
+		end
+				
 	end.
 
 %------------------------------------------------------	

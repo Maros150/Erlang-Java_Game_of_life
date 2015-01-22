@@ -49,5 +49,3 @@ rysuj(_,Stan,NewStan,_,_) when Stan == NewStan -> ok;
 rysuj(PID,_,_,X,Y) ->
 	PID ! {rysuj,X,Y},
 	ok.
-	
-		

@@ -32,14 +32,17 @@ init(X,Y,_Sasiedzi,Stan,LicznikZyjacych) ->
 %	-aktualny stan komorki (zyje lub niezyje)
 %	-licznik zyjacych sasiadow
 %
-%{set,SetStan} - do ozywiania komorek na starcie
+%{set,_SetStan} - do ozywiania komorek na starcie
 %{ping} - proces nadrzedny zezwala na kolejny krok,
 %		obliczamy nowy stan,
 %		informujemy sasiadow o swoim stanie,
 %		jesli stan komorki sie zmienil informujemy o tym
 %		 program do rysowania
-%		zerujemy licznik zyjacych  						
-%{change,zyje},{change,niezyje} - odebranie wiadomosci			 
+%		zerujemy licznik zyjacych  				
+%		czekamy na wiadomoœci od wszystkich sasiadow%
+%		(oczekiwanie)
+%	
+%{change,zyje},{change,niezyje} - odebranie wiadomosci		
 %		z jego aktualnym stanem od sasiada,
 %		jesli zyje zwiekszamy licznik zyjacych sssiadow
 run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
@@ -55,9 +58,10 @@ run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 	end.
 
 
-
+%odebranie wiadomosci od wszystkich sasiadow i dopiero w tedy 
+%oczekiwanie na kolejna wiadomosc {ping}
 oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
-	%io:format("unexpected message ~p {~p}[~p;~p]~n", [Licznik,length(Sasiedzi),X,Y ]),
+	%io:format("~p{~p[~p;~p]~n", [Licznik,length(Sasiedzi),X,Y ]),
 	receive 
 		{change,zyje} -> 
 		case length(Sasiedzi)  of 
@@ -81,6 +85,7 @@ oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
 
 %------------------------------------------------------	
 %zasady gry 
+%zwraca stan komorki 
 sprawdz(zyje,2) ->zyje;
 sprawdz(zyje,3) -> zyje;
 sprawdz(niezyje,3) -> zyje;

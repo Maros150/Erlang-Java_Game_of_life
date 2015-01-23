@@ -25,24 +25,24 @@ init(Szer,Wys,Lista) ->
 %synchronizacja pracy komorek
 serwerRun(Lista) -> 
 	receive
-		stop -> stop(Lista),
-			error(killed)
+		stop -> stop(Lista)
+			
 		after 400 -> ping(Lista)
 	end,
 	serwerRun(Lista).
 
 %<><><>><><><><><><><><><><><>><><><>
-
+%zakonczenie dzialania
 stop([]) -> ok;
 stop([{_,_,PID}|T]) -> 
 	PID ! {stop},
 	stop(T).
-
+%<><><>><><><><><><><><><><><>><><><>
 
 
 
 %---------------------------------------------------
-%wyslanie kazdej komorce jej sasiadow(bez brzegowych)
+%wyslanie kazdej komorce jej sasiadow
 init_sasiedzi([],_,_,_) -> ok;
 init_sasiedzi([{X,Y,PID}|T],Lista,Szer,Wys) ->
 	PID ! {init,sasiedzi({X,Y,PID},Lista,Szer,Wys)},
@@ -50,12 +50,13 @@ init_sasiedzi([{X,Y,PID}|T],Lista,Szer,Wys) ->
 
 %---------------------------------------------------
 %zwraca liste Pid sasiadow kazdej komorki
-%nie obsluguje komorek na krawendziach 
+%
 sasiedzi({X,Y,_},Lista,Szer,Wys) when X > 1, Y > 1, X < Szer, Y < Wys -> 
 	[znajdz(X - 1,Y-1,Lista), znajdz(X-1,Y,Lista), znajdz(X - 1,Y + 1,Lista),
 	znajdz(X,Y - 1,Lista), znajdz(X,Y+1,Lista),
 	znajdz(X + 1,Y - 1,Lista), znajdz(X+1,Y,Lista),znajdz(X + 1,Y + 1,Lista)];
-
+%
+%
 sasiedzi({X,Y,_},Lista,Szer,_) when X > 1, Y == 1, X < Szer  -> 
 	[znajdz(X - 1,Y,Lista), znajdz(X + 1,Y,Lista), znajdz(X - 1,Y + 1,Lista),
 	znajdz(X,Y + 1,Lista), znajdz(X + 1,Y + 1,Lista)];
@@ -68,7 +69,8 @@ sasiedzi({X,Y,_},Lista,Szer,Wys) when X == Szer, Y > 1, Y < Wys ->
 sasiedzi({X,Y,_},Lista,Szer,Wys) when X > 1 , Y == Wys, X < Szer  -> 
 	[znajdz(X - 1 ,Y,Lista), znajdz(X - 1,Y - 1,Lista), znajdz(X,Y - 1,Lista),
 	znajdz(X  + 1,Y - 1,Lista), znajdz(X + 1 ,Y ,Lista)];
-
+%
+%
 sasiedzi({X,Y,_},Lista,_,_) when X == 1, Y == 1 -> 
 	[znajdz(X + 1 ,Y,Lista), znajdz(X ,Y + 1,Lista), znajdz(X + 1,Y + 1,Lista)];
 sasiedzi({X,Y,_},Lista,_,Wys) when X == 1, Y == Wys -> 
@@ -96,16 +98,15 @@ ping([{_,_,PID}|T]) ->
 
 
 %---------------------------------------------------
-%odpalamy komorki i tworzymy liste krotek {X,Y, pid} 
-%dla kazdej komorki
+%odpalamy kazda komorke i tworzymy liste krotek {X,Y, pid} 
+%dla tablicy Szer X Wys
 stworz_kom(X,_,Szer,_,L) when X > Szer -> L;
 stworz_kom(X,Y,Szer,Wys,L) when Y > Wys ->
 	stworz_kom(X+1,1,Szer,Wys,L);
 stworz_kom(X,Y,Szer,Wys,L) ->
 	stworz_kom(X,Y+1,Szer,Wys,[{X,Y,komorka:start(X,Y)}|L]).
 
-%ustaw stan komorki	
-ustaw_stan(PID,Stan) -> PID ! {set, Stan}.
+
 
 
 %---------------------------------------------------
@@ -114,6 +115,9 @@ ustaw_stan(PID,Stan) -> PID ! {set, Stan}.
 %przed startem gry
 %---------------------------------------------------
 %---------------------------------------------------
+
+%ustaw stan komorki	
+ustaw_stan(PID,Stan) -> PID ! {set, Stan}.
 
 %<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 %wariant A ->(dla kazdej komorki)wybieramy 
@@ -130,7 +134,7 @@ decyzja(Rand,PID) when Rand == 1 ->
 decyzja(_,_) -> ok.
 
 %<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-%wariant B ->ozywiamy kilka wczesniej wybranych komorek 
+%wariant B 
 init_poczatkowe_B(Lista) ->
 	znajdz(5,5,Lista) ! {set,zyje},
 	znajdz(6,6,Lista) ! {set,zyje},
@@ -141,6 +145,7 @@ init_poczatkowe_B(Lista) ->
 	znajdz(3,4,Lista) ! {set,zyje}
 	.
 %<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+%wariant C 
 init_poczatkowe_C(Lista) ->
 	znajdz(5,5,Lista) ! {set,zyje},
 	znajdz(5,6,Lista) ! {set,zyje},

@@ -7,13 +7,14 @@
 %proces obslugujacy dzialanie komorki
 %o wspolrzednych X i Y
 start(X,Y) ->
-	spawn_link(?MODULE, init, [X,Y]).
+	spawn_link(?MODULE, init, [X,Y,self(),[],niezyje,0]).
+
 
 
 %-------------------------
 %wylapywanie wyjatkow i przedwczesnego zakonczenia
 %dzialania komorki
-init(X,Y) -> 
+init(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) -> 
 	receive
 		{init,InitSasiedzi,InitPID} ->
 			run(X,Y,InitPID,InitSasiedzi,Stan, LicznikZyjacych)

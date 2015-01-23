@@ -131,5 +131,5 @@ init_poczatkowe_B(Lista) ->
 init_poczatkowe_C(Lista) ->
 	znajdz(5,5,Lista) ! {set,zyje},
 	znajdz(5,6,Lista) ! {set,zyje},
-	znajdz(5,7,Lista) ! {set,zyje}
+	znajdz(5,7,Lista) ! {set,zyje}.
 

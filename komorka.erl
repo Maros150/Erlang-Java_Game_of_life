@@ -7,17 +7,17 @@
 %proces obslugujacy dzialanie komorki
 %o wspolrzednych X i Y
 start(X,Y) ->
-	spawn_link(?MODULE, init, [X,Y,self(),[],niezyje,0]).
+	spawn_link(?MODULE, init, [X,Y,[],niezyje,0]).
 
 
 
 %-------------------------
 %wylapywanie wyjatkow i przedwczesnego zakonczenia
 %dzialania komorki
-init(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) -> 
+init(X,Y,_Sasiedzi,Stan,LicznikZyjacych) -> 
 	receive
-		{init,InitSasiedzi,InitPID} ->
-			run(X,Y,InitPID,InitSasiedzi,Stan, LicznikZyjacych)
+		{init,InitSasiedzi} ->
+			run(X,Y,InitSasiedzi,Stan, LicznikZyjacych)
 	end.
 
 
@@ -44,36 +44,36 @@ init(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
 %{change,zyje},{change,niezyje} - odebranie wiadomosci			 
 %		z jego aktualnym stanem od sasiada,
 %		jesli zyje zwiekszamy licznik zyjacych sssiadow
-run(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
+run(X,Y,Sasiedzi,Stan,LicznikZyjacych) ->
 	receive
 		{ping} -> 
 			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
-			oczekiwanie(X,Y,PID,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0,1);
+			oczekiwanie(X,Y,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0,1);
 		{set,SetStan} ->
-			run(X,Y,PID,Sasiedzi,niezyje,3);
+			run(X,Y,Sasiedzi,niezyje,3);
 		{stop} -> ok
 		
 	end.
 
 
 
-oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
-	io:format("unexpected message ~p {~p}[~p;~p]~n", [Licznik,length(Sasiedzi),X,Y ]),
+oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
+	%io:format("unexpected message ~p {~p}[~p;~p]~n", [Licznik,length(Sasiedzi),X,Y ]),
 	receive 
 		{change,zyje} -> 
 		case length(Sasiedzi)  of 
 			Licznik  ->
-				run(X,Y,PID,Sasiedzi,Stan, (LicznikZyjacych + 1));
+				run(X,Y,Sasiedzi,Stan, (LicznikZyjacych + 1));
 			_ ->	
-				oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych + 1,Licznik + 1)
+				oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych + 1,Licznik + 1)
 		end;
 		{change,niezyje} -> 
 		case length(Sasiedzi)  of 
 			Licznik    ->
-				run(X,Y,PID,Sasiedzi,Stan, LicznikZyjacych);
+				run(X,Y,Sasiedzi,Stan, LicznikZyjacych);
 			_ ->
-				oczekiwanie(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych,Licznik + 1)
+				oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik + 1)
 		end
 				
 	end.
@@ -102,4 +102,6 @@ rysuj(_,_,X,Y) ->
 	ok.
 	
 		
+
+
 

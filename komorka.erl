@@ -12,8 +12,8 @@ start(X,Y) ->
 
 
 %-------------------------
-%wylapywanie wyjatkow i przedwczesnego zakonczenia
-%dzialania komorki
+%{init,InitSasiedzi} - proces nadrzedny wysyla kazdej komorce
+%			 liste jej sasiadow
 init(X,Y,_Sasiedzi,Stan,LicznikZyjacych) -> 
 	receive
 		{init,InitSasiedzi} ->
@@ -32,8 +32,6 @@ init(X,Y,_Sasiedzi,Stan,LicznikZyjacych) ->
 %	-aktualny stan komorki (zyje lub niezyje)
 %	-licznik zyjacych sasiadow
 %
-%{init,InitSasiedzi} - proces nadrzedny wysyla kazdej komorce
-%			 liste jej sasiadow
 %{set,SetStan} - do ozywiania komorek na starcie
 %{ping} - proces nadrzedny zezwala na kolejny krok,
 %		obliczamy nowy stan,
@@ -68,13 +66,16 @@ oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik) ->
 			_ ->	
 				oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych + 1,Licznik + 1)
 		end;
+
 		{change,niezyje} -> 
 		case length(Sasiedzi)  of 
 			Licznik    ->
 				run(X,Y,Sasiedzi,Stan, LicznikZyjacych);
 			_ ->
 				oczekiwanie(X,Y,Sasiedzi,Stan,LicznikZyjacych,Licznik + 1)
-		end
+		end;
+		
+		{stop} -> ok
 				
 	end.
 

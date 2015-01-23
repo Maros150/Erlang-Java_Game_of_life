@@ -25,9 +25,21 @@ init(Szer,Wys,Lista) ->
 %synchronizacja pracy komorek
 serwerRun(Lista) -> 
 	receive
+		stop -> stop(Lista),
+			error(killed)
 		after 400 -> ping(Lista)
 	end,
 	serwerRun(Lista).
+
+%<><><>><><><><><><><><><><><>><><><>
+
+stop([]) -> ok;
+stop([{_,_,PID}|T]) -> 
+	PID ! {stop},
+	stop(T).
+
+
+
 
 %---------------------------------------------------
 %wyslanie kazdej komorce jej sasiadow(bez brzegowych)
@@ -81,6 +93,7 @@ ping([]) -> ok;
 ping([{_,_,PID}|T]) -> 
 	PID ! {ping},
 	ping(T).
+
 
 %---------------------------------------------------
 %odpalamy komorki i tworzymy liste krotek {X,Y, pid} 

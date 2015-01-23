@@ -47,7 +47,7 @@ init(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
 run(X,Y,PID,Sasiedzi,Stan,LicznikZyjacych) ->
 	receive
 		{ping} -> 
-			rysuj(PID,Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
+			rysuj(Stan, sprawdz(Stan,LicznikZyjacych), X, Y),
 			wyslij_sasiadom(sprawdz(Stan,LicznikZyjacych),Sasiedzi),
 			oczekiwanie(X,Y,PID,Sasiedzi,sprawdz(Stan,LicznikZyjacych),0,1);
 		{set,SetStan} ->

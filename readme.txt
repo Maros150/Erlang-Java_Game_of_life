@@ -1,5 +1,5 @@
 Start:
-serwer:start(). -zwraca Pid procesu nadrzêdnego 
+Pid = serwer:start(). -zwraca Pid procesu nadrzêdnego 
 
 
 Stop:

@@ -15,7 +15,7 @@ o poszczególnych komórkach w liœcie krotek {X,Y,Pid}, gdzie X,Y to wspó³rzêdne.
 Przed rozpoczêciem gry proces nadrzêdny wysy³a ka¿dej stworzonej komórce listê 
 jej s¹siadów i o¿ywia wybrane komórki. Nastêpnie co 50 milisekund sekund 
 wysy³a ka¿dej komórce wiadomoœæ {ping}, jednoczeœnie oczekuj¹c na wiadomoœæ stopu.
-Po otrzymaniu wiadomoœci: 'stop' przesy³a j¹ wszystkim komórk¹ i koñczy pracê.
+Po otrzymaniu wiadomoœci: 'stop' przesy³a j¹ wszystkim komórkom i koñczy pracê.
 
 Komorka:
 	Tworz¹c komórkê ustawiamy jej stan na 'niezyje', licznikowi ¿ywych 
